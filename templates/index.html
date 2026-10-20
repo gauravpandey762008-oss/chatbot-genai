@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>AI Chatbot</title>
+<style>
+ body{font-family:Arial;max-width:600px;margin:30px auto}
+ #box{border:1px solid #ccc;height:350px;overflow:auto;padding:10px;border-radius:8px}
+ .user{text-align:right;color:#0a58ca} .bot{color:#198754}
+ input{width:75%;padding:10px} button{padding:10px}
+</style></head>
+<body>
+<h2>🤖 AI Chatbot</h2>
+<div id="box"></div><br>
+<input id="msg" placeholder="Kuch poochho..."> <button onclick="send()">Send</button>
+<script>
+let history = [];   // chat memory browser me
+async function send(){
+  const input = document.getElementById("msg");
+  const text = input.value; if(!text) return;
+  add("user", text); history.push({role:"user", text}); input.value="";
+  const res = await fetch("/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({history})});
+  const data = await res.json();
+  add("bot", data.reply); history.push({role:"bot", text:data.reply});
+}
+function add(who, text){
+  const box = document.getElementById("box");
+  box.innerHTML += `<p class="${who}"><b>${who}:</b> ${text}</p>`;
+  box.scrollTop = box.scrollHeight;
+}
+</script></body></html>
